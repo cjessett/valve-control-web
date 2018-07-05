@@ -1,27 +1,23 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import mqttClient from './soil.js';
+import { client, config } from './soil.js';
 
-var currentlySubscribedTopic = '$aws/things/ss-1/shadow/update/accepted';
 class App extends Component {
   constructor() {
     super();
-    this.state = { fetched: false };
+    this.state = { connected: false };
   }
   componentDidMount = () => {
-    mqttClient.on('connect', this.handleConnect);
-    mqttClient.on('message', this.handleMessage);
+    client.on('connect', this.handleConnect);
+    client.on('message', this.handleMessage);
   }
   handleConnect = () => {
-    console.log('connected');
     this.setState({ connected: true });
-    mqttClient.subscribe(currentlySubscribedTopic);
+    client.subscribe(config.topic);
   }
   handleMessage = (topic, payload) => {
     const { state: { reported: { moisture } }, timestamp } = JSON.parse(payload.toString());
-    console.log(timestamp)
-    console.log('moisture', moisture);
     const d = new Date(0)
     d.setUTCSeconds(timestamp)
     const opts = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZoneName: 'short', hour: 'numeric', minute: 'numeric', second: 'numeric' };
