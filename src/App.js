@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import thing from './thing.js';
+import thing from './util/thing.js';
 
 class App extends Component {
   constructor() {
