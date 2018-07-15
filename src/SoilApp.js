@@ -1,20 +1,16 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { client, config } from './soil.js';
+import client from './util/soil.js';
 
-class App extends Component {
-  constructor() {
-    super();
+export default class SoilApp extends Component {
+  constructor(props) {
+    super(props);
     this.state = { connected: false };
-  }
-  componentDidMount = () => {
-    client.on('connect', this.handleConnect);
-    client.on('message', this.handleMessage);
+    this.client = client({ name: props.name, onConnect: this.handleConnect, onMessage: this.handleMessage });
   }
   handleConnect = () => {
     this.setState({ connected: true });
-    client.subscribe(config.topic);
   }
   handleMessage = (topic, payload) => {
     const { state: { reported: { moisture } }, timestamp } = JSON.parse(payload.toString());
@@ -30,6 +26,7 @@ class App extends Component {
         <header className="App-header">
           <img src={logo} className="App-logo" alt="logo" />
           <h1 className="App-title">Soil Moisture</h1>
+          <span>{this.state.connected ? 'connected' : 'connecting'}</span>
         </header>
         <h1 style={{ fontSize: '7em', margin: 0 }}>{this.state.moisture && this.state.moisture}</h1>
         <h3>{this.state.date}</h3>
@@ -37,5 +34,3 @@ class App extends Component {
     );
   }
 }
-
-export default App;
